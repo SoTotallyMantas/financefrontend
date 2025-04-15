@@ -2,6 +2,20 @@ import "~/styles/globals.css";
 
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from '@clerk/nextjs'
+
+import { AppSidebar } from "~/components/app-sidebar"
+import { SiteHeader } from "~/components/site-header"
+import { SidebarInset, SidebarProvider } from "~/components/ui/sidebar"
+import { ThemeProvider } from "~/components/theme-provider";
+import { ModeToggle } from "~/components/toggle-theme";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -18,8 +32,32 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geist.variable}`}>
-      <body>{children}</body>
+    <ClerkProvider>
+    <html lang="en" suppressHydrationWarning className={`${geist.variable}`}>
+      <body>
+      <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+  
+          <div className="[--header-height:calc(theme(spacing.14))]">
+        <SidebarProvider className="flex flex-col">
+          <SiteHeader />
+          <div className="flex flex-1">
+            <AppSidebar />
+            <SidebarInset>
+             {children}
+             
+            </SidebarInset>
+          </div>
+        </SidebarProvider>
+      </div>
+   
+      </ThemeProvider>
+      </body>
     </html>
+    </ClerkProvider>
   );
 }
