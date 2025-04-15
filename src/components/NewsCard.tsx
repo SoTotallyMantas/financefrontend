@@ -40,8 +40,10 @@ type NewsCardProps = {
         </CardHeader>
         <CardContent>
           {news.image &&
-          
-          <img src={news.image } width={350} height={400} alt={news.headline} />
+          <div className="flex justify-center">
+            
+          <img  src={news.image } width={400} height={400} alt={news.headline} />
+          </div>
           }
           <p className=" text-2xl font-medium p-2 pl-1  ">
             Summary:
