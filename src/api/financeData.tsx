@@ -57,14 +57,14 @@ export interface NewsArticle {
     pc: number;
   }
 export async function fetchStockPrice(symbol:string): Promise<StockPriceData>{
-  const apiUrl = process.env.APIURL;
+  const apiUrl = process.env.NEXT_PUBLIC_APIURL;
  const response = await fetch(`${apiUrl}/finance/StockPrice?symbol=${symbol}`)
  const data: StockPriceData = await response.json() as StockPriceData
  return data;
 };
   // Retrieve Stock Symbols
 export async function fetchSymbols(): Promise<SymbolData[]>{
-   const apiUrl = process.env.APIURL;
+   const apiUrl = process.env.NEXT_PUBLIC_APIURL;
     const response = await fetch(`${apiUrl}/finance/Symbols`)
   const data: SymbolData[] = await response.json() as SymbolData[];
   const formatedData: SymbolData[] = data.map(symbol => ({
@@ -76,7 +76,7 @@ export async function fetchSymbols(): Promise<SymbolData[]>{
   };
   // Get Market News
   export async function  fetchMarketNews(): Promise<NewsArticle[]>{
-   const apiUrl = process.env.APIURL;
+   const apiUrl = process.env.NEXT_PUBLIC_APIURL;
     const response = await fetch(`${apiUrl}/finance/MarketNews`)
   const data: NewsArticle[] = await response.json() as NewsArticle[];
   return data;
@@ -84,7 +84,7 @@ export async function fetchSymbols(): Promise<SymbolData[]>{
   };
   // get Company news of stock
   export async function  fetchCompanyNews(symbol: string): Promise<NewsArticle[]>{
-   const apiUrl = process.env.APIURL;
+   const apiUrl = process.env.NEXT_PUBLIC_APIURL;
     const response = await fetch(`${apiUrl}/finance/CompanyNews?symbol=${symbol}`)
     const data: NewsArticle[] = await response.json() as NewsArticle[];
     return data;
@@ -92,7 +92,7 @@ export async function fetchSymbols(): Promise<SymbolData[]>{
   };
   // Get Stock metrics of Stock
   export async function  fetchStockMetric(symbol:string): Promise<StockMetricData>{
-   const apiUrl = process.env.APIURL;
+   const apiUrl = process.env.NEXT_PUBLIC_APIURL;
     const response = await fetch(`${apiUrl}/finance/StockMetric?symbol=${symbol}`)
     const data: StockMetricData = await response.json() as StockMetricData;
     return data;
@@ -100,7 +100,7 @@ export async function fetchSymbols(): Promise<SymbolData[]>{
   };
   // TODO 
   export async function GetFavorite(token:string): Promise<FavoritedData[]>{
-   const apiUrl = process.env.APIURL;
+   const apiUrl = process.env.NEXT_PUBLIC_APIURL;
     const response = await fetch(`${apiUrl}/user/favorites`, {
       method: 'GET',
       headers: {
@@ -115,7 +115,7 @@ export async function fetchSymbols(): Promise<SymbolData[]>{
   console.log(data);
   };
   export async function PostFavorite(token:string,symbol:string){
-      const apiUrl = process.env.APIURL;
+      const apiUrl = process.env.NEXT_PUBLIC_APIURL;
     const response = await fetch(`${apiUrl}/user/favorites?symbol=${symbol}`, {
       method: 'POST',
       headers: {
@@ -131,7 +131,7 @@ export async function fetchSymbols(): Promise<SymbolData[]>{
   };
 
   export async function DeleteFavorite(token:string,symbol:string){
-    const apiUrl = process.env.APIURL;
+    const apiUrl = process.env.NEXT_PUBLIC_APIURL;
     const response = await fetch(`${apiUrl}/user/favorites?symbol=${symbol}`, {
       method: 'DELETE',
       headers: {
