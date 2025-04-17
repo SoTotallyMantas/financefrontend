@@ -31,7 +31,7 @@ export default function Page() {
     const observer = new IntersectionObserver(
       (entries) => {
         const [entry] = entries;
-        if (entry.isIntersecting) {
+        if (entry?.isIntersecting) {
           setVisibleArticles((prev) => prev + 30);
         }
       },
