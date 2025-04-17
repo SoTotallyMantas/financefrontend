@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import StockCard from '~/components/StockCard';
 import  type { SymbolData } from "~/api/financeData";
 
-import { fetchSymbols, GetFavorite } from "~/api/financeData";
+import { DeleteFavorite, fetchSymbols, GetFavorite, PostFavorite } from "~/api/financeData";
 import { SearchForm } from "~/components/search-form";
 
 import { useAuth } from "@clerk/nextjs";
@@ -12,17 +12,16 @@ import { UseInfiniteScroll } from "~/hooks/useInfiniteScroll";
 export default function Page() {
   const { isSignedIn,getToken} = useAuth();
 
-  // State
+  const [favoritesLoaded, setFavoritesLoaded] = useState(false);
    const [symbols,setSymbols] = useState<SymbolData[]>([]);
    const [VisibleSymbolsCount,setVisibleSymbolsCount] = useState(50);
    const [visibleSymbols,setVisibleSymbols] = useState<SymbolData[]>([]);
    const [loading,setLoading] = useState(true);
    const [searchTerm,setSearchTerm] = useState("");
-
+   const [favorites, setFavorites] = useState<Set<string>>(new Set());
    const loadMoreRef = useRef<HTMLDivElement | null>(null);
    const hasMore = VisibleSymbolsCount < symbols.length;
-  
-   // Fetch Data
+
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
@@ -36,7 +35,8 @@ export default function Page() {
 
       
       const favoriteSymbols = new Set(favorites.map(f => f.symbol));
-  
+      setFavorites(favoriteSymbols);
+      setFavoritesLoaded(true);
       const merged = fetchedSymbols.map(symbol => ({
         ...symbol,
         favorited: favoriteSymbols.has(symbol.symbol)
@@ -75,7 +75,40 @@ export default function Page() {
     
   },[searchTerm,symbols,VisibleSymbolsCount]);
 
-  // Scroll Hook
+  const handleToggleFavorite = async (symbol: string) => {
+    const token = await getToken();
+    if (!token) return;
+  
+    const isNowFavorited = !favorites.has(symbol);
+  
+    
+    setFavorites(prev => {
+      const next = new Set(prev);
+      if (isNowFavorited) next.add(symbol);
+      else next.delete(symbol);
+      return next;
+    });
+  
+    
+    try {
+      if (isNowFavorited) {
+        await PostFavorite(token, symbol);
+      } else {
+        await DeleteFavorite(token, symbol);
+      }
+    } catch (err) {
+      console.error("Failed to update favorite", err);
+      
+      setFavorites(prev => {
+        const next = new Set(prev);
+        if (isNowFavorited) next.delete(symbol);
+        else next.add(symbol);
+        return next;
+      });
+    }
+  };
+
+
   UseInfiniteScroll({
     ref:loadMoreRef,
     hasMore,
@@ -90,9 +123,14 @@ export default function Page() {
         onSearchChange={(value) => setSearchTerm(value)}
       />
     <div className="grid auto-rows-min gap-4 grid-cols-2">
-          {visibleSymbols.map((symbolItem: SymbolData) => (
+          {favoritesLoaded && visibleSymbols.map((symbolItem: SymbolData) => (
             
-             <StockCard key={symbolItem.symbol} symbol={symbolItem}/>
+            <StockCard
+            key={symbolItem.symbol}
+            symbol={symbolItem}
+            isFavorited={favorites.has(symbolItem.symbol)}
+            onToggleFavorite={() => handleToggleFavorite(symbolItem.symbol)}
+          />
           ))}
           {!loading && hasMore && (
         <div ref={loadMoreRef} className="h-8 bg-transparent" />

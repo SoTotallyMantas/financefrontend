@@ -3,44 +3,23 @@
 import  type { SymbolData } from "~/api/financeData";
 import { Button } from "./ui/button";
 import Link from "next/link";
-import { Heart, HeartOff } from "lucide-react";
+import {  Heart, HeartOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@clerk/nextjs";
 import {DeleteFavorite,PostFavorite } from "~/api/financeData";
 
 type StockCardProps = {
     symbol: SymbolData;
+    isFavorited: boolean;
+    onToggleFavorite: () => void;
   };
-  
-export default function StockCard ( {symbol}: StockCardProps) {
+export default function StockCard ( {symbol,isFavorited,onToggleFavorite}: StockCardProps) {
      
      const {isSignedIn,getToken} = useAuth();
-     const [favorited, setFavorited] = useState<boolean | null>(null);
+    
 
-     useEffect(() => {
-       
-       setFavorited(symbol.favorited ?? false);
-     }, [symbol.favorited]);
-     const syncing = favorited === null;
 
-     async function toggleFavorite() {
-        if (favorited === null) return;
-
-        const newState = !favorited;
-            setFavorited(newState);
-        try {
-            const token = await getToken();
-            if (!token) throw new Error("No token available");
-            if(newState) {
-                await PostFavorite(token,symbol.symbol);
-            } else {
-                await DeleteFavorite(token,symbol.symbol);
-            }
-        } catch (error) {
-            console.error("Failed to update favorite:", error);
-            setFavorited(!newState);
-        }
-     };
+     
      
     return(
 
@@ -60,15 +39,15 @@ export default function StockCard ( {symbol}: StockCardProps) {
 
                 </Link>
                 </div>
-                {!syncing && isSignedIn && 
+                {isSignedIn && 
                 (
-                    !favorited ?
+                    !isFavorited ?
                         (
-                            <Button className="w-auto mt-2 h-full bg-green-500" onClick={toggleFavorite}>
+                            <Button className="w-auto mt-2 h-full bg-green-500" onClick={onToggleFavorite}>
                                 <Heart />
                             </Button>
                         ) : (
-                            <Button className="w-auto mt-2 h-full bg-red-500" onClick={toggleFavorite}>
+                            <Button className="w-auto mt-2 h-full bg-red-500" onClick={onToggleFavorite}>
                                 <HeartOff />
                             </Button>
                         )
