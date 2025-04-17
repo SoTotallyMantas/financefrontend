@@ -24,7 +24,7 @@ const labelMap: Record<keyof StockPriceData, string> = {
   };
   
 
-export default function stockPriceCard({data}: {data: StockPriceCardProps}) {
+export default function stockPriceCard({data}: StockPriceCardProps) {
 
     if(!data) {
         return <div className="text-muted-foreground p-2">Loading prices...</div>;
