@@ -31,11 +31,13 @@ export default function stockPriceCard({data}: StockPriceCardProps) {
     }
     return(
         <div className="flex">
-            {Object.entries(labelMap).map(([key,label])=> (
-             <div key={key}>
-            <p className="text-muted-foregroun p-2">{label} {data[key as keyof StockMetricData]?.toLocaleString() ?? "N/A" }</p>
-            </div>
-            ))}
+            {(Object.keys(labelMap) as (keyof StockPriceData)[]).map((key) => 
+        <div key={key}>
+          <p className="text-muted-foreground p-2">                      
+            {labelMap[key]} {data[key]?.toLocaleString?.() ?? "N/A"} 
+          </p>
+        </div>
+      )}
 
         </div>
      
